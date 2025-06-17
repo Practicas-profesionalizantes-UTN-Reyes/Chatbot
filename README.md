@@ -17,28 +17,28 @@ El bot utilizará un modelo **LLaMA local** (`llama-cpp`) y responderá por **Te
 
 ## Fases del Proyecto
 
-1. **Web Scraping**  
+* . **Web Scraping**  
    Extracción de contenido útil desde sitios web definidos.
 
-2. **Preprocesamiento del Texto**  
+* . **Preprocesamiento del Texto**  
    Limpieza sin deformar, eliminación de encabezados/pies, división en *chunks*.
 
-3. **Generación de Embeddings**  
+* . **Generación de Embeddings**  
    Transformar cada chunk en vectores semánticos (`sentence-transformers`).
 
-4. **Almacenamiento Vectorial (FAISS)**  
+* . **Almacenamiento Vectorial (FAISS)**  
    Guardar y buscar chunks relevantes por similitud semántica.
 
-5. **Integración con llama-cpp**  
+* . **Integración con llama-cpp**  
    Generar respuestas usando un modelo LLaMA local, sin APIs externas.
 
-6. **Conexión con Telegram**  
+* . **Conexión con Telegram**  
    Desplegar el bot usando `python-telegram-bot`.
 
-7. **Funciones adicionales**  
+* . **Funciones adicionales**  
    Logs de usuarios, comandos (`/start`, `/help`), carga de PDFs nuevos.
 
-8. **Documentación, pruebas y deploy final**
+* . **Documentación, pruebas y deploy final**
 
 ---
 
