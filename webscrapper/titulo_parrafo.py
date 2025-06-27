@@ -18,10 +18,14 @@ def cont_pagina(html):
 
     contado=1
 
+    pattern = r"[\n&_^~¢£¤¥¦§¨©ª«¬®¯±µ¶·¸¹º»×÷ʃʒʔʕʖ†‡•‣․‥…‰‱′″‴‵‶‷‹›※‼⁂⁎⁑⁕⁖⁘⁙⁚⁛⁜℅ℓ№℗℘ℙ℞℠™℣Ω℧℮⅍↔↕↖↗↘↙↩↪⇄⇅⇆⇇⇈⇉⇊⇋⇌⇍⇎⇏⇐⇑⇒⇓⇔∂∃∅∆∇∈∉∋∏∑∓∔∕√∝∞∟∠∡∢∣∤∥∦∧∨∩∪∫∬∭∮∯∰∴∵∶∷∸∹∺∻∼∽∾≀≁≂≃≄≅≆≇≈≉≊]"
+
     for p in ps: 
         texto = p.text.strip()
         # re.sub(r"\s", texto)
-        diccionario_p[contado]=texto
+        texto_limpio = re.sub(pattern, "", texto)
+        texto_limpio.strip(" ")
+        diccionario_p[contado]=texto_limpio
         contado=contado+1
 
     return diccionario_p
