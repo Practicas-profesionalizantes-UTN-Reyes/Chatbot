@@ -1,0 +1,100 @@
+from sentence_transformers import SentenceTransformer
+
+# Cargar modelo optimizado para búsqueda y chatbots
+modelo = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
+
+# Chunk de texto
+chunk = "Los embeddings permiten comparar textos según su significado."
+
+# Convertir a embedding (normalizado)
+embedding = modelo.encode(chunk, normalize_embeddings=True)
+
+# Mostrar el resultado
+print("Embedding:", embedding)
+print("Dimensión:", len(embedding))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+# 3. Pre-calcular los embeddings de los chunks (base de conocimiento)
+embeddings_chunks = modelo.encode(chunks, normalize_embeddings=True)
+
+
+pregunta = input("\n Pregunta: ")
+
+
+# Convertir la pregunta a embedding
+embedding_pregunta = modelo.encode(pregunta, normalize_embeddings=True)
+
+# Calcular similitud coseno entre la pregunta y lo guardado
+similitudes = util.cos_sim(embedding_pregunta, embeddings_chunks)[0]
+
+# Obtener el índice de la respuesta más similar
+mejor_idx = similitudes.argmax()
+'''
+
+# from sentence_transformers import SentenceTransformer, util
+
+# # 1. Cargar el modelo optimizado para preguntas y búsqueda
+# modelo = SentenceTransformer('all-MiniLM-L6-v2')
+
+# # 2. Base de conocimiento (chunks de texto)
+# chunks = [
+#     "Python es un lenguaje de programación interpretado.",
+#     "Los embeddings sirven para comparar el significado entre textos.",
+#     "La inteligencia artificial permite crear sistemas que aprenden.",
+#     "SentenceTransformers es útil para generar embeddings semánticos.",
+#     "FAISS es una herramienta para búsqueda vectorial rápida."
+# ]
+
+# # 3. Obtener embeddings normalizados de los chunks
+# embeddings_chunks = modelo.encode(chunks, normalize_embeddings=True)
+
+# # 4. Loop para hacer preguntas
+# while True:
+#     pregunta = input("\nTu pregunta (escribí 'salir' para terminar): ")
+#     if pregunta.lower() in ["salir", "exit", "quit"]:
+#         print("¡Hasta luego!")
+#         break
+
+#     # Convertir la pregunta a embedding
+#     embedding_pregunta = modelo.encode(pregunta, normalize_embeddings=True)
+
+#     # Calcular similitudes coseno con los chunks
+#     similitudes = util.cos_sim(embedding_pregunta, embeddings_chunks)
+
+#     # Obtener el índice del chunk más similar
+#     mejor_idx = similitudes.argmax()
+
+#     # Mostrar resultado
+#     print(f"\n🤖 Respuesta más similar:\n{chunks[mejor_idx]}")
+#     print(f"🔎 Similitud: {similitudes[mejor_idx]:.4f}")

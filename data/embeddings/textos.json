@@ -1,0 +1,667 @@
+[
+  {
+    "id": 1,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "+34 916 33 17 79"
+    ]
+  },
+  {
+    "id": 2,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Aula Virtual"
+    ]
+  },
+  {
+    "id": 3,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Programacion Web   Apps"
+    ]
+  },
+  {
+    "id": 4,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Aprende a Programar desde Cero"
+    ]
+  },
+  {
+    "id": 5,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Desarrollo Web Full Stack"
+    ]
+  },
+  {
+    "id": 6,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Desarrollo Apps iOS  Android"
+    ]
+  },
+  {
+    "id": 7,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Java  Spring Boot"
+    ]
+  },
+  {
+    "id": 8,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Data, IA  Blockchain"
+    ]
+  },
+  {
+    "id": 9,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Big Data  Machine Learning"
+    ]
+  },
+  {
+    "id": 10,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Inteligencia Artificial"
+    ]
+  },
+  {
+    "id": 11,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Blockchain"
+    ]
+  },
+  {
+    "id": 12,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Infraestructura  Seguridad"
+    ]
+  },
+  {
+    "id": 13,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "DevOps  Cloud"
+    ]
+  },
+  {
+    "id": 14,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Ciberseguridad"
+    ]
+  },
+  {
+    "id": 15,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Diseño UX y Marketing Digital con IA"
+    ]
+  },
+  {
+    "id": 16,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "UX/UIAI Driven"
+    ]
+  },
+  {
+    "id": 17,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Marketing Digital Al Driven"
+    ]
+  },
+  {
+    "id": 18,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Cursos en directo para programadores"
+    ]
+  },
+  {
+    "id": 19,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Curso de Al Engineering"
+    ]
+  },
+  {
+    "id": 20,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Cursos online de Actualidad tech"
+    ]
+  },
+  {
+    "id": 21,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Curso de Prompt Engineering"
+    ]
+  },
+  {
+    "id": 22,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Curso de Ética en la lA Generativa"
+    ]
+  },
+  {
+    "id": 23,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Curso de Accesibilidad Web"
+    ]
+  },
+  {
+    "id": 24,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Curso de Desarrollo Seguro de Apps"
+    ]
+  },
+  {
+    "id": 25,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Descubre tu programa ideal en 2 minutos"
+    ]
+  },
+  {
+    "id": 26,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Qué hace cada rol y qué estudiar"
+    ]
+  },
+  {
+    "id": 27,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Lo que nos hace únicos"
+    ]
+  },
+  {
+    "id": 28,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Nuestra Tribu  sus Guías"
+    ]
+  },
+  {
+    "id": 29,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Mentores KeepCoders"
+    ]
+  },
+  {
+    "id": 30,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Comunidad KeepCoders"
+    ]
+  },
+  {
+    "id": 31,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Embajadores KeepCoders"
+    ]
+  },
+  {
+    "id": 32,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Resultados que hablan solos"
+    ]
+  },
+  {
+    "id": 33,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Proyectos Finales"
+    ]
+  },
+  {
+    "id": 34,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Casos de Éxito"
+    ]
+  },
+  {
+    "id": 35,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Opiniones"
+    ]
+  },
+  {
+    "id": 36,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "KeepCoding en los medios"
+    ]
+  },
+  {
+    "id": 37,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Tu Salto al Empleo Tech Real"
+    ]
+  },
+  {
+    "id": 38,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Bolsa de Talento"
+    ]
+  },
+  {
+    "id": 39,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Eventos  Experiencias"
+    ]
+  },
+  {
+    "id": 40,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Becas  Financiación"
+    ]
+  },
+  {
+    "id": 41,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Quiénes Somos"
+    ]
+  },
+  {
+    "id": 42,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Mucho más que una escuela.Edtech con propósito"
+    ]
+  },
+  {
+    "id": 43,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Blog"
+    ]
+  },
+  {
+    "id": 44,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Blog de Programación KeepCoding"
+    ]
+  },
+  {
+    "id": 45,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Aprende desarrollo real y tendencias tech"
+    ]
+  },
+  {
+    "id": 46,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Blog de Fernando Rodríguez"
+    ]
+  },
+  {
+    "id": 47,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "El código contado desde la trinchera"
+    ]
+  },
+  {
+    "id": 48,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Blog de Adriana Botelho"
+    ]
+  },
+  {
+    "id": 49,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Liderazgo tech con alma y futuro"
+    ]
+  },
+  {
+    "id": 50,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Podcast"
+    ]
+  },
+  {
+    "id": 51,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Codemacers (podcast)"
+    ]
+  },
+  {
+    "id": 52,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Voces tech reales, sin filtros"
+    ]
+  },
+  {
+    "id": 53,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Recursos"
+    ]
+  },
+  {
+    "id": 54,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Nerdsletter"
+    ]
+  },
+  {
+    "id": 55,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Lo mejor del mundo tech, sin humo"
+    ]
+  },
+  {
+    "id": 56,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Test de Orientación Tecnológica"
+    ]
+  },
+  {
+    "id": 57,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Descubre tu camino en solo 2 minutos"
+    ]
+  },
+  {
+    "id": 58,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Guía de Perfiles Tech"
+    ]
+  },
+  {
+    "id": 59,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Qué hace cada rol y qué estudiar"
+    ]
+  },
+  {
+    "id": 60,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Noticias e información techie en un solo lugar"
+    ]
+  },
+  {
+    "id": 61,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "contacto"
+    ]
+  },
+  {
+    "id": 62,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "(+34) 916 33 1779[email protected]"
+    ]
+  },
+  {
+    "id": 63,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "KeepCoding. Todos los derechos reservados 2024"
+    ]
+  },
+  {
+    "id": 64,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Bootcamps"
+    ]
+  },
+  {
+    "id": 65,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Aprende a programar desde cero"
+    ]
+  },
+  {
+    "id": 66,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Big Data, IA  Machine Learning"
+    ]
+  },
+  {
+    "id": 67,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "DevOps  Cloud Computing"
+    ]
+  },
+  {
+    "id": 68,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Inteligencia Artificial"
+    ]
+  },
+  {
+    "id": 69,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Ciberseguridad"
+    ]
+  },
+  {
+    "id": 70,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Blockchain y Criptoactivos"
+    ]
+  },
+  {
+    "id": 71,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Desarrollo Web"
+    ]
+  },
+  {
+    "id": 72,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Desarrollo de Apps Móviles iOS"
+    ]
+  },
+  {
+    "id": 73,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Marketing Digital y Análisis de datos"
+    ]
+  },
+  {
+    "id": 74,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Diseño UX/UI AI Driven"
+    ]
+  },
+  {
+    "id": 75,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "links"
+    ]
+  },
+  {
+    "id": 76,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Formación para empresas"
+    ]
+  },
+  {
+    "id": 77,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Cursos"
+    ]
+  },
+  {
+    "id": 78,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Másters"
+    ]
+  },
+  {
+    "id": 79,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "About"
+    ]
+  },
+  {
+    "id": 80,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Trabaja con nosotros"
+    ]
+  },
+  {
+    "id": 81,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Código de honor"
+    ]
+  },
+  {
+    "id": 82,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Prensa KeepCoding"
+    ]
+  },
+  {
+    "id": 83,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Premios KeepCoding"
+    ]
+  },
+  {
+    "id": 84,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Política de cookies"
+    ]
+  },
+  {
+    "id": 85,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Política de privacidad"
+    ]
+  },
+  {
+    "id": 86,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Aviso legal"
+    ]
+  },
+  {
+    "id": 87,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Condiciones de contratación"
+    ]
+  },
+  {
+    "id": 88,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "KeepCoding. Todos los derechos reservados 2024"
+    ]
+  },
+  {
+    "id": 89,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Utilizamos cookies propias y de terceros para obtener datos estadísticos de la navegación de nuestros usuarios, ofrecer marketing personalizado y mejorar nuestros servicios. Tienes más información en nuestra Política de Cookies. Puedes aprender más sobre qué cookies utilizamos o desactivarlas en los ajustes."
+    ]
+  },
+  {
+    "id": 90,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Esta web utiliza cookies para que podamos ofrecerte la mejor experiencia de usuario posible. La información de las cookies se almacena en tu navegador y realiza funciones tales como reconocerte cuando vuelves a nuestra web o ayudar a nuestro equipo a comprender qué secciones de la web encuentras más interesantes y útiles."
+    ]
+  },
+  {
+    "id": 91,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Las cookies estrictamente necesarias tiene que activarse siempre para que podamos guardar tus preferencias de ajustes de cookies."
+    ]
+  },
+  {
+    "id": 92,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Si desactivas esta cookie no podremos guardar tus preferencias. Esto significa que cada vez que visites esta web tendrás que activar o desactivar las cookies de nuevo."
+    ]
+  },
+  {
+    "id": 93,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Esta web utiliza Google Analytics para recopilar información anónima tal como el número de visitantes del sitio, o las páginas más populares."
+    ]
+  },
+  {
+    "id": 94,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "Dejar esta cookie activa nos permite mejorar nuestra web."
+    ]
+  },
+  {
+    "id": 95,
+    "texto": [
+      "Blog de Programación y Tecnología",
+      "¡Por favor, activa primero las cookies estrictamente necesarias para que podamos guardar tus preferencias!"
+    ]
+  }
+]
