@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from ModeloIA import pedir_consulta
 
 modelo = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
 
@@ -54,6 +55,11 @@ def buscar_similares(consulta : str, indice_path, top_k=3):
     
     return resultados
 
+consulta="inteligencia"
+Respuesta=(buscar_similares(consulta, "data/embeddings", top_k=10))
+#contexto = "\n".join(r["texto"]for r in Respuesta)
 
-print(buscar_similares("Inteligencia", "data/embeddings", top_k=3))
+resultado_final=pedir_consulta(consulta,Respuesta)
+print("Respuesta generada:")
+print(resultado_final)
 
