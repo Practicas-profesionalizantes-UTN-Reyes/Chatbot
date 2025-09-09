@@ -12,7 +12,7 @@ import os
 
 
 
-def procesar_pdf(path_pdf, guardar, palabras_claves):
+def procesar_pdf(path_pdf, guardar):
     texto = levantar_pdf(path_pdf) #llamamos a la funcion levantar pdf que devuelve un string con el texto del mismo
     
     if texto is None or all(t.strip() == "" for t in texto.values()): #si el texto esta vacio muestra lo siguiente
@@ -27,10 +27,9 @@ def procesar_pdf(path_pdf, guardar, palabras_claves):
         with open (output_path, "w", encoding="utf-8") as f:
             f.write(texto_limpio)#borramos el texto anterior y le copiamos el contenido formateado
         
-        print(f"Texto guardado en {output_path}")
+        return output_path
     
-        output_txt = os.path.join(guardar, f"{nombre_archivo_pdf}_palabrasclave.json")
-        main_busq_palabras(output_path, palabras_claves, output_txt)
+        
             
     else:
         print("Sin contenido")            

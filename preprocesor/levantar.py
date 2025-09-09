@@ -18,8 +18,6 @@ def levantar_pdf(path):
             pagina = doc.load_page(numero_pagina) #Carga la pagina del archivo
             texto = pagina.get_text() # a ese numero de pagina le copia el contenido
             texto_paginas[numero_pagina + 1] = texto.strip() #llenamos un diccionario con el contenido y numero
-            print(f"--- Página {numero_pagina + 1} ---")
-            print(texto)
         
         doc.close() #cerramos el archivo
     except Exception as e:
@@ -30,7 +28,5 @@ def levantar_pdf(path):
             for numero_pagina, pagina in enumerate(lector.pages, start=1): # obtenemos el numero de pagina y el contenido
                 texto = pagina.extract_text()   #extraemos el texto en formato legible 
                 texto_paginas[numero_pagina] = texto.strip() if texto else "" # guardar el contenido de la pagina si texto tiene algo
-                print(f"--- Página {numero_pagina} ---")
-                print(texto)
 
     return texto_paginas if texto_paginas else None #retornamos si texto_paginas tiene contenido

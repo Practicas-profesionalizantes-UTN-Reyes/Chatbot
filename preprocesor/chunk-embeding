@@ -9,9 +9,6 @@ chunk = "Los embeddings permiten comparar textos según su significado."
 # Convertir a embedding (normalizado)
 embedding = modelo.encode(chunk, normalize_embeddings=True)
 
-# Mostrar el resultado
-print("Embedding:", embedding)
-print("Dimensión:", len(embedding))
 
 
 

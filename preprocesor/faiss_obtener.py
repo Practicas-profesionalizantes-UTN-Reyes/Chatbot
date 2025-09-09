@@ -8,58 +8,50 @@ from ModeloIA import pedir_consulta
 modelo = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
 
 
-def crear_indices_faiss(chunks,path):     #algo/algo2/    chunks es la direccion del .json que contiene los chunks
-   
-    with open(chunks, "r", encoding = "utf-8") as f:
-        data = json.load(f)
+def crear_indices_faiss(chunks_json, path):
+    """
+    chunks_json: archivo JSON con lista de dicts [{"id": ..., "texto": ...}, ...]
+    path: carpeta donde guardar index.faiss y referencias.json
+    """
+    os.makedirs(path, exist_ok=True)
 
-    ordenado = sorted(data.items(), key=lambda x: int(x[0]))
+    with open(chunks_json, "r", encoding="utf-8") as f:
+        data = json.load(f)  # data es lista de dicts
 
-    ids = [int(k) for k, _ in ordenado]
-    textos = [v for _, v in ordenado]
+    textos = [str(d["texto"]) for d in data]
+    ids = [d["id"] for d in data]
 
-    embeddings = modelo.encode(textos, convert_to_numpy=True)    
 
-    dim = embeddings.shape[1]        #Obtiene la cantidad de columnas(dimension del vector)
-    index = faiss.IndexFlatL2(dim)  #Indice plano con distancia L2 (Euclidea), dim es para las dimension de cada vector
-    index.add(embeddings)   #Agrega todos los vectores(uno por chunk) al FAISS
+    embeddings = modelo.encode(textos, convert_to_numpy=True)
 
-    faiss.write_index(index, os.path.join(path,"index.faiss")) #algo/algo2/index.faiss
+    dim = embeddings.shape[1]
+    index = faiss.IndexFlatL2(dim)
+    index.add(embeddings)
 
+    faiss.write_index(index, os.path.join(path, "index.faiss"))
+
+    # Guardar referencias aparte para no pisar jsonjuntos.json
     referencias = [{"id": id_num, "texto": txt} for id_num, txt in zip(ids, textos)]
+    with open(os.path.join(path, "referencias.json"), "w", encoding="utf-8") as f:
+        json.dump(referencias, f, indent=2, ensure_ascii=False)
 
-    with open(os.path.join(path,"textos.json"), "w", encoding="utf-8") as f:
-        json.dump(referencias,f , indent=2, ensure_ascii = False)
 
+def buscar_similares(consulta: str, indice_path, top_k=3):
+    index = faiss.read_index(os.path.join(indice_path, "index.faiss"))
 
-def buscar_similares(consulta : str, indice_path, top_k=3):
-
-    index = faiss.read_index(os.path.join(indice_path,"index.faiss"))
-
-    with open(os.path.join(indice_path,"textos.json"),"r", encoding="utf-8") as f:
+    with open(os.path.join(indice_path, "referencias.json"), "r", encoding="utf-8") as f:
         referencias = json.load(f)
-    
-    emb = modelo.encode([consulta], convert_to_numpy=True)
 
-    distancias, indices = index.search(emb,top_k)     #faiss.IndexFlatL2(dim)
+    emb = modelo.encode([consulta], convert_to_numpy=True)
+    distancias, indices = index.search(emb, top_k)
 
     resultados = []
-
     for i, idx in enumerate(indices[0]):
-        chunk = referencias[idx]
-        resultados.append({
-            "id":chunk["id"],
-            "texto": chunk["texto"],
-            "distancia": float(distancias[0][i])
-        })
-    
+        if 0 <= idx < len(referencias):
+            chunk = referencias[idx]
+            resultados.append({
+                "id": chunk["id"],
+                "texto": chunk["texto"],
+                "distancia": float(distancias[0][i])
+            })
     return resultados
-
-consulta="inteligencia"
-Respuesta=(buscar_similares(consulta, "data/embeddings", top_k=10))
-#contexto = "\n".join(r["texto"]for r in Respuesta)
-
-resultado_final=pedir_consulta(consulta,Respuesta)
-print("Respuesta generada:")
-print(resultado_final)
-
