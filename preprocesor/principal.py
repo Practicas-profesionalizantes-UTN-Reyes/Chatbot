@@ -23,10 +23,10 @@ class Config:
     OUTPUT_PATH = Path("./data/output")
     EMBEDDINGS_PATH = Path("./data/embeddings")
     MODEL_NAME = 'multi-qa-MiniLM-L6-cos-v1'
-    SIMILARITY_THRESHOLD = 1.2
+    SIMILARITY_THRESHOLD = 0.7
     MIN_SIMILARITY_FILTER = 0.35
-    TOP_N_FILTER = 2
-    FAISS_TOP_K = 10
+    TOP_N_FILTER = 5
+    FAISS_TOP_K = 5
 
 # Initialize model once
 modelo = SentenceTransformer(Config.MODEL_NAME)
@@ -207,7 +207,7 @@ def responder_a_consulta(consulta: str) -> str:
 
     # Use the best matching chunk if similarity is good
     mejor_resultado = resultados[0]
-    if mejor_resultado.get("distancia", float('inf')) < Config.SIMILARITY_THRESHOLD:
+    if mejor_resultado.get("similitud", 0) > Config.SIMILARITY_THRESHOLD:
         mejor_chunk = normalizar_texto(mejor_resultado.get("texto", ""))
         mejor_filtrado = filtrar_por_similitud(consulta, mejor_chunk, modelo)
         respuesta = pedir_consulta(consulta, mejor_filtrado)

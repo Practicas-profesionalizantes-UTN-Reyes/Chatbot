@@ -1,11 +1,10 @@
 from llama_cpp import Llama
 
 llm = Llama( #creando una variable con la ia
-    model_path="./models/openhermes-2.5-mistral-7b.Q4_K_M-002.gguf", #modelo de la IA
-    n_ctx=32768, #Cantidad de transacciones/ las veces que busca
+    model_path="./models/openhermes-2.5-mistral-7b.Q4_K_M.gguf", #modelo de la IA
+    n_ctx=10000, #Cantidad de transacciones/ las veces que busca
     n_threads=6, # Cantidad de hilos que usa de mi procesador
     verbose=False,
-    n_gpu_layers=33
 )
 
 def pedir_consulta(consul,chunks):
