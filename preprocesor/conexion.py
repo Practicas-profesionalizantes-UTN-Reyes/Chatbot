@@ -1,20 +1,42 @@
 import os
+import json
 import asyncio
 import threading
+import concurrent.futures
 from flask import Flask, request
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 from pyngrok import ngrok
 import requests
+from waitress import serve   # ✅ en lugar de app.run()
 
 from principal import responder_a_consulta, inicializar_bot
 
+# --- Archivos ---
+RESPUESTAS_FILE = "respuestas.json"
+
+def cargar_respuestas():
+    """Carga respuestas guardadas en un archivo JSON"""
+    if os.path.exists(RESPUESTAS_FILE):
+        with open(RESPUESTAS_FILE, "r", encoding="utf-8") as f:
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return {}
+    return {}
+
+def guardar_respuesta(pregunta, respuesta):
+    """Guarda una nueva pregunta/respuesta en el archivo"""
+    data = cargar_respuestas()
+    data[pregunta.lower()] = respuesta
+    with open(RESPUESTAS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
 # --- Abre túnel con ngrok ---
 tunnel = ngrok.connect(addr=5000, proto="http", bind_tls=True)
-public_url = tunnel.public_url   # <- aquí la URL en string
+public_url = tunnel.public_url
 WEBHOOK_URL = f"{public_url}/webhook"
 print("🌍 Webhook público:", WEBHOOK_URL)
-
 
 # --- Configuración ---
 TOKEN = "7640980967:AAH2dSSczf-a6_3DSGNMZoDfOkABEou7onc"
@@ -24,12 +46,16 @@ app = Flask(__name__)
 
 # --- Inicializar Bot ---
 tg_app = Application.builder().token(TOKEN).build()
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+
+# Este loop se va a usar SOLO para el bot
+bot_loop = asyncio.new_event_loop()
+
+# --- Pool de hilos para consultas simultáneas ---
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)  # ✅ hasta 10 consultas a la vez
 
 # --- Handlers ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("¡Hola! Soy tu asistente virtual 🤖 \nSi quieres saber consultas pon /consultas y apaeceran las mas utilizadas")
+    await update.message.reply_text("¡Hola! Soy tu asistente virtual 🤖 \nPara saber las consultas más utilizadas: /consultas")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Comandos: /start /help /status /consultas")
@@ -40,24 +66,32 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # --- Menú de consultas frecuentes ---
 async def menu_consultas(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [KeyboardButton("📅 ¿Cuál es la fecha de los finales?")],
-        [KeyboardButton("📍 ¿Como inscribirse a nuevas materias?")],
-        [KeyboardButton("💵 ¿Cómo puedo solicitar una constancia de alumno regular?")],
-        [KeyboardButton("ℹ️ ¿Cómo puedo presentar una solicitud para una revisión de examen o nota en una materia?")]
+        [KeyboardButton("¿Quiénes pueden solicitarlo?")],
+        [KeyboardButton("¿Cómo me inscribo a nuevas materias?")],
+        [KeyboardButton("¿Cómo puedo solicitar una constancia de alumno regular?")],
+        [KeyboardButton("¿Cómo puedo presentar una solicitud para una revisión de examen o nota en una materia?")]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    await update.message.reply_text("Elegí una consulta:", reply_markup=reply_markup)
+    await update.message.reply_text("Elige una consulta:", reply_markup=reply_markup)
 
 # --- IA responde mensajes ---
-
 async def responder_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    msg = update.message.text
+    msg = update.message.text.strip()
     processing_msg = await update.message.reply_text("🔄 Procesando...")
 
     try:
-        # Ejecutar la función bloqueante en un thread aparte
-        respuesta = await asyncio.to_thread(responder_a_consulta, msg)
+        # 1. Buscar primero en archivo de respuestas guardadas
+        respuestas_guardadas = cargar_respuestas()
+        respuesta = respuestas_guardadas.get(msg.lower())
 
+        if not respuesta:
+            # 2. Si no existe, preguntar a la IA usando pool de threads
+            loop = asyncio.get_event_loop()
+            respuesta = await loop.run_in_executor(executor, responder_a_consulta, msg)
+            # Guardamos la nueva respuesta
+            guardar_respuesta(msg, respuesta)
+
+        # Enviar respuesta final
         await context.bot.edit_message_text(
             chat_id=update.effective_chat.id,
             message_id=processing_msg.message_id,
@@ -69,7 +103,6 @@ async def responder_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_id=processing_msg.message_id,
             text=f"❌ Error: {e}"
         )
-
 
 # Registrar handlers
 tg_app.add_handler(CommandHandler("start", start))
@@ -87,16 +120,18 @@ def index():
 def webhook():
     try:
         update = Update.de_json(request.get_json(force=True), tg_app.bot)
-        asyncio.run_coroutine_threadsafe(tg_app.process_update(update), loop)
+        # Enviar la actualización al loop del bot de manera segura
+        asyncio.run_coroutine_threadsafe(tg_app.process_update(update), bot_loop)
     except Exception as e:
         print(f"Error en webhook: {e}")
     return "ok", 200
 
 # --- Función para correr el bot en un thread ---
 def run_bot():
-    loop.run_until_complete(tg_app.initialize())
-    loop.run_until_complete(tg_app.start())
-    loop.run_forever()
+    asyncio.set_event_loop(bot_loop)
+    bot_loop.run_until_complete(tg_app.initialize())
+    bot_loop.run_until_complete(tg_app.start())
+    bot_loop.run_forever()
 
 # --- Main ---
 if __name__ == "__main__":
@@ -111,8 +146,7 @@ if __name__ == "__main__":
     r = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}")
     print("Webhook set:", r.json())
 
-    print("🚀 Servidor Flask corriendo...")
+    print("🚀 Servidor Flask corriendo con waitress...")
 
-    # ⚡ Evita el crash de colorama/click en Windows
-    app.run(host="0.0.0.0", port=5000, use_reloader=False)
-
+    # ✅ Ahora usamos waitress en lugar de app.run()
+    serve(app, host="0.0.0.0", port=5000)

@@ -2,7 +2,7 @@ import faiss
 import os
 import json
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer , util
 from ModeloIA import pedir_consulta
 
 modelo = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
@@ -55,3 +55,30 @@ def buscar_similares(consulta: str, indice_path, top_k=3):
                 "distancia": float(distancias[0][i])
             })
     return resultados
+
+
+
+def Respuesta_rapida(pregunta: str):
+    emb_nueva = modelo.encode(pregunta, convert_to_tensor=True)
+
+    with open("./respuestas.json", "r", encoding="utf-8") as f:
+        referencias = json.load(f)
+
+    mejor_sim = 0
+    mejor_resp = None
+
+    for q, resp in referencias.items():
+        # Generar embedding de la pregunta guardada
+        emb_guardado = modelo.encode(q, convert_to_tensor=True)
+
+        # Similaridad
+        sim = util.pytorch_cos_sim(emb_guardado, emb_nueva).item()
+
+        if sim > mejor_sim:
+            mejor_sim = sim
+            mejor_resp = resp
+
+    if mejor_sim >= 0.90:
+        return mejor_resp
+    return None
+

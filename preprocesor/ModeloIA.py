@@ -41,7 +41,7 @@ def pedir_consulta(consul,chunks):
       """
       output = llm(
             prompt,
-            max_tokens=500,
+            max_tokens=300,
             echo=False,
             stop=["\nPregunta:", "\n---", "\nSiguiente pregunta:", "\n\n"]
 
