@@ -29,6 +29,9 @@ El bot utilizará un modelo **LLaMA local** (`llama-cpp`) y responderá por **Te
 * . **Almacenamiento Vectorial (FAISS)**  
    Guardar y buscar chunks relevantes por similitud semántica.
 
+* . **Conexión con Telegram**  
+   Desplegar el bot usando `python-telegram-bot`.
+
 * . **Funciones adicionales**  
    Logs de usuarios, comandos (`/start`, `/help`), carga de PDFs nuevos.
 
@@ -39,8 +42,7 @@ El bot utilizará un modelo **LLaMA local** (`llama-cpp`) y responderá por **Te
 * . **Integración con llama-cpp**  
    Generar respuestas usando un modelo LLaMA local, sin APIs externas.
 
-* . **Conexión con Telegram**  
-   Desplegar el bot usando `python-telegram-bot`.
+
 
 ---
 
