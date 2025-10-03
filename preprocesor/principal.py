@@ -1,4 +1,4 @@
-import hashlib
+import hashlib                                  #CONSULTA CON LO NUEVO EN LINEA 214
 import os
 import pickle
 import re
@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer
 # Local imports
 from Main_formatear import crear_embeddings
 from juntarjson import juntar_json
-from faiss_obtener import buscar_similares, crear_indices_faiss, pedir_consulta , Respuesta_rapida
+from faiss_obtener import buscar_similares, crear_indices_faiss, Respuesta_rapida
 
 # ============================
 # CONFIGURATION
@@ -179,73 +179,12 @@ def filtrar_por_similitud(pregunta: str, texto: str, modelo_embed: SentenceTrans
 # ============================
 def responder_a_consulta(consulta: str) -> str:
     if Respuesta_rapida(consulta):
-        return Respuesta_rapida(consulta)
+        resultado = Respuesta_rapida(consulta)
         """Main function to respond to a query."""
     else:
-        consulta = consulta.strip()
-        if not consulta:
-            return "Por favor, proporciona una consulta válida."
-
-        # Check for file changes and update embeddings if needed
-        hay_cambios, nuevos, eliminados = hay_archivos_nuevos()
-        if hay_cambios:
-            print(f"Detected changes: {len(nuevos)} new/modified, {len(eliminados)} deleted files")
-            cargar_nuevos_embeddings()
-
-        # Search in FAISS
-        try:
-            resultados = buscar_similares(consulta, str(Config.EMBE_PATH), top_k=Config.FAISS_TOP_K)
-        except Exception as e:
-            return f"Error searching in FAISS index: {e}"
-
-        if not resultados:
-            return pedir_consulta(consulta, "No information found in context")
-
-        # Build context from results
-        contexto = "\n".join(
-            normalizar_texto(r.get("texto", "")) 
-            for r in resultados 
-            if r.get("texto")
-        )
-
-        # Use the best matching chunk if similarity is good
-        mejor_resultado = resultados[0]
-        if mejor_resultado.get("similitud", 0) > Config.SIMILARITY_THRESHOLD:
-            mejor_chunk = normalizar_texto(mejor_resultado.get("texto", ""))
-            mejor_filtrado = filtrar_por_similitud(consulta, mejor_chunk, modelo)
-            respuesta = pedir_consulta(consulta, mejor_filtrado)
-        else:
-            respuesta = pedir_consulta(consulta, contexto)
-
-        # Limitar la longitud para Telegram (4096 caracteres máximo)
-        if len(respuesta) > 4000:
-            respuesta = respuesta[:4000] + "...\n\n⚠️ La respuesta fue truncada por límite de Telegram"
-        
-        return respuesta
-
-# ============================
-# INITIALIZATION (Para uso con Telegram)
-# ============================
-def inicializar_bot():
-    """Initialize the bot on startup."""
-    print("Inicializando bot...")
+        resultado = "Por favor, proporciona una consulta válida."
+        return resultado
     
-    # Create necessary directories
-    Config.DATA_INPUT.mkdir(parents=True, exist_ok=True)
-    Config.EMBE_PATH.mkdir(parents=True, exist_ok=True)
-    Config.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
-    Config.EMBEDDINGS_PATH.mkdir(parents=True, exist_ok=True)
-    Config.HASH_FILE.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Initialize embeddings if they don't exist
-    if not (Config.EMBE_PATH / "jsonjuntos.json").exists():
-        print("Initializing embeddings for the first time...")
-        cargar_nuevos_embeddings()
-    else:
-        print("Embeddings already exist, checking for updates...")
-        hay_cambios, nuevos, eliminados = hay_archivos_nuevos()
-        if hay_cambios:
-            print(f"Updating embeddings due to changes: {len(nuevos)} new/modified files")
-            cargar_nuevos_embeddings()
-    
-    print("Bot inicializado correctamente!")
+    return resultado
+
+

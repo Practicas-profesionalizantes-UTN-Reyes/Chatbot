@@ -3,7 +3,7 @@ import os
 import json
 import numpy as np
 from sentence_transformers import SentenceTransformer , util
-from ModeloIA import pedir_consulta
+
 
 modelo = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
 
@@ -61,7 +61,7 @@ def buscar_similares(consulta: str, indice_path, top_k=3):
 def Respuesta_rapida(pregunta: str):
     emb_nueva = modelo.encode(pregunta, convert_to_tensor=True)
 
-    with open("./respuestas.json", "r", encoding="utf-8") as f:
+    with open("./data/output/respuestas.json", "r", encoding="utf-8") as f:
         referencias = json.load(f)
 
     mejor_sim = 0
@@ -78,7 +78,7 @@ def Respuesta_rapida(pregunta: str):
             mejor_sim = sim
             mejor_resp = resp
 
-    if mejor_sim >= 0.90:
+    if mejor_sim >= 0:
         return mejor_resp
     return None
 
