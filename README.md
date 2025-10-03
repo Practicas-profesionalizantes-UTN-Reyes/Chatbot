@@ -29,6 +29,8 @@ El bot utilizará un modelo **LLaMA local** (`llama-cpp`) y responderá por **Te
 * . **Almacenamiento Vectorial (FAISS)**  
    Guardar y buscar chunks relevantes por similitud semántica.
 
+  --------- A INTEGRAR --------- 
+
 * . **Integración con llama-cpp**  
    Generar respuestas usando un modelo LLaMA local, sin APIs externas.
 
