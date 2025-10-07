@@ -17,25 +17,26 @@ from faiss_obtener import buscar_similares, crear_indices_faiss, Respuesta_rapid
 # CONFIGURATION
 # ============================
 class Config:
-    DATA_INPUT = Path("./data/imputPDF")
-    HASH_FILE = Path("./data/cifrado/file_hashes.pkl")
-    EMBE_PATH = Path("./data/embe")
-    OUTPUT_PATH = Path("./data/output")
-    EMBEDDINGS_PATH = Path("./data/embeddings")
-    MODEL_NAME = 'multi-qa-MiniLM-L6-cos-v1'
+    """Clase de configuración con rutas y parámetros globales."""
+    DATA_INPUT = Path("./data/imputPDF")            # Carpeta con PDFs de entrada
+    HASH_FILE = Path("./data/cifrado/file_hashes.pkl")  # Archivo para guardar hashes
+    EMBE_PATH = Path("./data/embe")                 # Carpeta de FAISS
+    OUTPUT_PATH = Path("./data/output")             # Carpeta de salida
+    EMBEDDINGS_PATH = Path("./data/embeddings")     # Carpeta con embeddings individuales
+    MODEL_NAME = 'multi-qa-MiniLM-L6-cos-v1'        # Modelo de embeddings
     SIMILARITY_THRESHOLD = 0.7
     MIN_SIMILARITY_FILTER = 0.35
     TOP_N_FILTER = 5
     FAISS_TOP_K = 5
 
-# Initialize model once
+# Inicializamos el modelo una sola vez
 modelo = SentenceTransformer(Config.MODEL_NAME)
 
 # ============================
 # AUXILIARY FUNCTIONS
 # ============================
 def calcular_hash(file_path: Path) -> str:
-    """Calculate MD5 hash of a file."""
+    """Calcula el hash MD5 de un archivo (para detectar cambios)."""
     h = hashlib.md5()
     with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
@@ -43,7 +44,7 @@ def calcular_hash(file_path: Path) -> str:
     return h.hexdigest()
 
 def cargar_hash_archivo() -> Dict[str, str]:
-    """Load saved file hashes."""
+    """Carga los hashes guardados de archivos anteriores."""
     if Config.HASH_FILE.exists():
         try:
             with open(Config.HASH_FILE, "rb") as f:
@@ -53,13 +54,16 @@ def cargar_hash_archivo() -> Dict[str, str]:
     return {}
 
 def guardar_hash(hash_dict: Dict[str, str]) -> None:
-    """Save file hashes."""
+    """Guarda los hashes actuales de archivos en un .pkl."""
     Config.HASH_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(Config.HASH_FILE, "wb") as f:
         pickle.dump(hash_dict, f)
 
 def hay_archivos_nuevos() -> Tuple[bool, List[str], List[str]]:
-    """Check for new, modified, or deleted files."""
+    """
+    Verifica si hay archivos nuevos, modificados o eliminados en DATA_INPUT.
+    Retorna una tupla (hay_cambios, lista_nuevos, lista_eliminados).
+    """
     archivos_actuales = {}
     for archivo in Config.DATA_INPUT.iterdir():
         if archivo.is_file():
@@ -80,7 +84,7 @@ def hay_archivos_nuevos() -> Tuple[bool, List[str], List[str]]:
     return False, [], []
 
 def vaciar_carpeta(path_carpeta: Path) -> None:
-    """Empty a folder safely."""
+    """Vacía una carpeta de forma segura (borra archivos y subcarpetas)."""
     if not path_carpeta.exists():
         return
         
@@ -95,7 +99,7 @@ def vaciar_carpeta(path_carpeta: Path) -> None:
             print(f"Warning: Could not delete {item}: {e}")
 
 def normalizar_texto(texto: Any) -> str:
-    """Normalize text input."""
+    """Convierte listas o entradas en texto limpio."""
     if isinstance(texto, list):
         return " ".join(map(str, texto))
     return str(texto).strip()
@@ -104,17 +108,20 @@ def normalizar_texto(texto: Any) -> str:
 # EMBEDDINGS + FAISS
 # ============================
 def cargar_nuevos_embeddings() -> None:
-    """Generate new embeddings and create FAISS index."""
-    # Clean output directories
+    """
+    Genera embeddings de los PDFs nuevos, los combina en un JSON final
+    y crea un índice FAISS para consultas rápidas.
+    """
+    # Limpiar carpetas de salida
     vaciar_carpeta(Config.OUTPUT_PATH)
     vaciar_carpeta(Config.EMBEDDINGS_PATH)
 
-    # Generate individual embeddings
+    # Generar embeddings para cada PDF de entrada
     for archivo in Config.DATA_INPUT.iterdir():
         if archivo.is_file():
             crear_embeddings(str(archivo))
 
-    # Combine JSONs
+    # Buscar JSONs con embeddings
     data_folder = Config.EMBEDDINGS_PATH
     json_files = list(data_folder.glob("*.json"))
     
@@ -122,50 +129,52 @@ def cargar_nuevos_embeddings() -> None:
         print("No JSON files found for processing")
         return
 
-    # Process JSON files sequentially
     final_json = Config.EMBE_PATH / "jsonjuntos.json"
     
     if len(json_files) >= 2:
-        # Start with first two files
+        # Unir el primero y segundo
         juntar_json(str(json_files[0]), str(json_files[1]))
         
-        # Merge remaining files
+        # Seguir uniendo los demás
         for json_file in json_files[2:]:
             juntar_json(str(final_json), str(json_file))
     elif json_files:
-        # Only one file - copy it to final location
+        # Si solo hay uno, se copia directamente
         import shutil
         shutil.copy2(str(json_files[0]), str(final_json))
 
-    # Create FAISS index
+    # Crear índice FAISS con el JSON final
     crear_indices_faiss(str(final_json), str(Config.EMBE_PATH))
 
 def filtrar_por_similitud(pregunta: str, texto: str, modelo_embed: SentenceTransformer, 
                          min_sim: float = Config.MIN_SIMILARITY_FILTER, 
                          top_n: int = Config.TOP_N_FILTER) -> str:
-    """Filter text by similarity to the question."""
+    """
+    Filtra partes de un texto que son más similares a la pregunta.
+    Retorna solo las partes relevantes.
+    """
     if not texto.strip():
         return texto
         
-    # Split text into meaningful parts
+    # Separar texto en frases
     partes = re.split(r'(?<=[.!?])\s+', texto)
     if len(partes) <= 1:
         partes = texto.split(". ")
     
-    # Encode question and text parts
+    # Embeddings de pregunta y partes
     emb_q = modelo_embed.encode([pregunta])[0]
     emb_parts = modelo_embed.encode(partes)
 
-    # Calculate similarities
+    # Calcular similitudes coseno
     sims = []
     for e, p in zip(emb_parts, partes):
         norm_e = np.linalg.norm(e)
         norm_q = np.linalg.norm(emb_q)
-        if norm_e > 0 and norm_q > 0:  # Avoid division by zero
+        if norm_e > 0 and norm_q > 0:  # Evitar divisiones por 0
             similarity = np.dot(emb_q, e) / (norm_q * norm_e)
             sims.append((similarity, p))
 
-    # Filter and sort by similarity
+    # Filtrar y ordenar por mayor similitud
     filtered_sims = [s for s in sims if s[0] >= min_sim]
     filtered_sims.sort(key=lambda x: x[0], reverse=True)
 
@@ -178,13 +187,16 @@ def filtrar_por_similitud(pregunta: str, texto: str, modelo_embed: SentenceTrans
 # MAIN QUERY FUNCTION (Para Telegram)
 # ============================
 def responder_a_consulta(consulta: str) -> str:
+    """
+    Función principal para responder una consulta (usada en Telegram).
+    - Primero intenta con Respuesta_rapida.
+    - Si no encuentra nada, devuelve un mensaje de error.
+    """
     if Respuesta_rapida(consulta):
         resultado = Respuesta_rapida(consulta)
-        """Main function to respond to a query."""
+        """Main function to respond to a query."""   # <- Comentario añadido en tu línea 214
     else:
         resultado = "Por favor, proporciona una consulta válida."
         return resultado
     
     return resultado
-
-

@@ -1,4 +1,5 @@
-# conexion.py
+# ===================== IMPORTS =====================
+# Librerías estándar y externas que usa el proyecto
 import os
 import json
 import asyncio
@@ -11,23 +12,24 @@ from telegram.ext import Application, CommandHandler, MessageHandler, ContextTyp
 from pyngrok import ngrok
 import requests
 from waitress import serve
-from principal import responder_a_consulta
+from principal import responder_a_consulta   # función IA para responder consultas
 
-# --- Archivos ---
+# ===================== ARCHIVOS =====================
+# Archivos de preguntas/respuestas (JSON)
 RESPUESTAS_FILE = "preguntas_respuestas.json"
 RESPUESTAS_PATHS = [Path("./data/output/respuestas.json")]
 
+# ===================== FUNCIONES PARA JSON =====================
 def cargar_respuestas() -> dict:
     """
-    Carga el JSON de preguntas desde la primera ruta existente.
-    Si no encuentra nada, devuelve {}.
+    Carga el archivo JSON de preguntas/respuestas desde la primera ruta disponible.
+    Si no existe o es inválido, devuelve {}.
     """
     for p in RESPUESTAS_PATHS:
         try:
             if p.exists():
                 with p.open("r", encoding="utf-8") as f:
                     data = json.load(f)
-                    # Debug útil en consola:
                     print(f"✅ Cargadas {len(data)} preguntas desde: {p}")
                     return data
         except json.JSONDecodeError:
@@ -36,14 +38,17 @@ def cargar_respuestas() -> dict:
     return {}
 
 def guardar_respuesta(pregunta, respuesta):
-    """Guarda una nueva pregunta/respuesta en el archivo"""
+    """
+    Guarda una nueva pregunta/respuesta en el archivo JSON principal.
+    """
     data = cargar_respuestas()
-    data[pregunta] = respuesta  # guardamos tal cual aparece en el chat
+    data[pregunta] = respuesta
     with open(RESPUESTAS_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-# ====== CATEGORÍAS (en base a tu JSON) ======
-# NOTA: Mostramos solo las preguntas que existan en el JSON cargado.
+# ===================== CATEGORÍAS =====================
+# Categorías predefinidas de preguntas
+# Solo se mostrarán si tienen preguntas en el JSON cargado
 CATEGORIAS_DEF = {
     "🧾 Legajo y Libreta": [
         "Cómo obtener el legajo definitivo",
@@ -102,7 +107,10 @@ CATEGORIAS_DEF = {
 }
 
 def filtrar_categorias_por_json(respuestas: dict) -> dict:
-    """Deja en cada categoría solo las preguntas que existan en el JSON."""
+    """
+    Filtra las categorías, dejando solo aquellas preguntas
+    que existan realmente en el JSON cargado.
+    """
     filtradas = {}
     keys = set(respuestas.keys())
     for cat, preguntas in CATEGORIAS_DEF.items():
@@ -111,8 +119,11 @@ def filtrar_categorias_por_json(respuestas: dict) -> dict:
             filtradas[cat] = presentes
     return filtradas
 
+# ===================== MENÚS TELEGRAM =====================
 def kb_categorias(categorias: dict) -> ReplyKeyboardMarkup:
-    # 2 por fila
+    """
+    Construye el teclado de categorías (2 botones por fila).
+    """
     botones = []
     fila = []
     for cat in categorias.keys():
@@ -125,11 +136,15 @@ def kb_categorias(categorias: dict) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(botones, resize_keyboard=True)
 
 def kb_preguntas(preguntas: list) -> ReplyKeyboardMarkup:
-    # 1 o 2 por fila según largo
+    """
+    Construye el teclado de preguntas dentro de una categoría.
+    - Si la pregunta es larga: va sola en una fila.
+    - Si es corta: se muestran de a 2.
+    - Agrega botones de navegación (⬅️ Volver, 🏠 Inicio).
+    """
     botones = []
     fila = []
     for q in preguntas:
-        # si es muy larga, una por fila
         if len(q) > 28:
             if fila:
                 botones.append(fila)
@@ -142,34 +157,32 @@ def kb_preguntas(preguntas: list) -> ReplyKeyboardMarkup:
                 fila = []
     if fila:
         botones.append(fila)
-    # fila de navegación
     botones.append([KeyboardButton("⬅️ Volver"), KeyboardButton("🏠 Inicio")])
     return ReplyKeyboardMarkup(botones, resize_keyboard=True)
 
-# --- Abrir túnel con ngrok ---
+# ===================== NGROK (URL pública) =====================
+# Se abre un túnel con ngrok para recibir mensajes de Telegram
 tunnel = ngrok.connect(addr=5000, proto="http", bind_tls=True)
 public_url = tunnel.public_url
 WEBHOOK_URL = f"{public_url}/webhook"
 print("🌍 Webhook público:", WEBHOOK_URL)
 
-# --- Configuración ---
-TOKEN = "7640980967:AAH2dSSczf-a6_3DSGNMZoDfOkABEou7onc"
+# ===================== CONFIGURACIÓN BOT =====================
+TOKEN = "7640980967:AAH2dSSczf-a6_3DSGNMZoDfOkABEou7onc"  # Token del bot
 
-# --- Inicializar Flask ---
+# Inicializamos Flask y el Bot
 app = Flask(__name__)
-
-# --- Inicializar Bot ---
 tg_app = Application.builder().token(TOKEN).build()
 
-# Loop solo para el bot
+# Loop y ThreadPool
 bot_loop = asyncio.new_event_loop()
-
-# Pool de hilos para consultas
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 
-# ============ Handlers ============
-
+# ===================== HANDLERS DEL BOT =====================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Comando /start → Muestra menú de categorías inicial.
+    """
     respuestas = cargar_respuestas()
     categorias = filtrar_categorias_por_json(respuestas)
     context.user_data.clear()
@@ -190,12 +203,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /help → Muestra lista de comandos disponibles."""
     await update.message.reply_text("Comandos: /start /help /status /consultas")
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /status → Verifica que el bot está funcionando."""
     await update.message.reply_text("✅ Bot en funcionamiento")
 
 async def menu_consultas(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Comando /consultas → Muestra menú principal de categorías nuevamente.
+    """
     respuestas = cargar_respuestas()
     categorias = filtrar_categorias_por_json(respuestas)
     context.user_data["categorias"] = categorias
@@ -214,12 +232,20 @@ async def menu_consultas(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "📚 Preguntas frecuentes por tema:",
         reply_markup=kb_categorias(categorias)
     )
+
 def es_categoria(texto: str, categorias: dict) -> bool:
+    """Verifica si el texto coincide con una categoría."""
     return texto in categorias
 
 async def responder_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Handler principal para mensajes de texto:
+    - Navegación entre categorías/preguntas.
+    - Si el mensaje es una pregunta conocida: responde desde el JSON.
+    - Si no está: consulta a la IA, responde y guarda en el JSON.
+    """
     msg = (update.message.text or "").strip()
-    respuestas = cargar_respuestas()  # siempre desde archivo
+    respuestas = cargar_respuestas()
     categorias = context.user_data.get("categorias") or filtrar_categorias_por_json(respuestas)
 
     # Navegación
@@ -235,14 +261,14 @@ async def responder_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Volvés al menú por temas:", reply_markup=kb_categorias(context.user_data["categorias"]))
         return
 
-    # Si eligió una categoría, mostrar submenú
+    # Si es categoría → mostrar submenú
     if es_categoria(msg, categorias):
         context.user_data["tema_actual"] = msg
         preguntas = categorias[msg]
         await update.message.reply_text(f"Temas: {msg}\nElegí una pregunta:", reply_markup=kb_preguntas(preguntas))
         return
 
-    # Si está dentro de una categoría y elige una pregunta, responder
+    # Si es pregunta → mostrar respuesta
     tema_actual = context.user_data.get("tema_actual")
     if tema_actual:
         preguntas = categorias.get(tema_actual, [])
@@ -251,11 +277,10 @@ async def responder_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(respuesta, reply_markup=kb_preguntas(preguntas))
             return
         else:
-            # Si escribe algo fuera de las opciones, mantenemos el submenú
             await update.message.reply_text("Elegí una opción del menú o tocá ⬅️ Volver.", reply_markup=kb_preguntas(preguntas))
             return
 
-    # Fuera del flujo de menú: comportamiento original (IA) + guardar
+    # Si no coincide con nada → consulta IA
     processing_msg = await update.message.reply_text("🔄 Procesando...")
     try:
         loop = asyncio.get_event_loop()
@@ -273,20 +298,25 @@ async def responder_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=f"❌ Error: {e}"
         )
 
-# Registrar handlers
+# ===================== REGISTRO DE HANDLERS =====================
 tg_app.add_handler(CommandHandler("start", start))
 tg_app.add_handler(CommandHandler("help", help_command))
 tg_app.add_handler(CommandHandler("status", status))
 tg_app.add_handler(CommandHandler("consultas", menu_consultas))
 tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, responder_mensaje))
 
-# --- Rutas Flask ---
+# ===================== FLASK ROUTES =====================
 @app.route("/", methods=["GET"])
 def index():
+    """Ruta principal → simple mensaje de verificación."""
     return "🤖 Bot Flask-Telegram corriendo"
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
+    """
+    Ruta para recibir mensajes de Telegram via Webhook.
+    Convierte el JSON en un objeto Update y lo procesa con el bot.
+    """
     try:
         update = Update.de_json(request.get_json(force=True), tg_app.bot)
         asyncio.run_coroutine_threadsafe(tg_app.process_update(update), bot_loop)
@@ -294,17 +324,22 @@ def webhook():
         print(f"Error en webhook: {e}")
     return "ok", 200
 
-# --- Función para correr el bot ---
+# ===================== BOT LOOP =====================
 def run_bot():
+    """
+    Arranca el loop del bot en un hilo separado.
+    Mantiene al bot corriendo de forma asíncrona.
+    """
     asyncio.set_event_loop(bot_loop)
     bot_loop.run_until_complete(tg_app.initialize())
     bot_loop.run_until_complete(tg_app.start())
     bot_loop.run_forever()
 
-# --- Main ---
+# ===================== MAIN =====================
 if __name__ == "__main__":
     print("🌍 URL ngrok generada:", public_url)
 
+    # Lanzar bot en un hilo
     threading.Thread(target=run_bot, daemon=True).start()
 
     # Configurar webhook en Telegram
@@ -312,5 +347,6 @@ if __name__ == "__main__":
     r = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}")
     print("Webhook set:", r.json())
 
+    # Correr Flask con waitress
     print("🚀 Servidor Flask corriendo con waitress...")
     serve(app, host="0.0.0.0", port=5000)
