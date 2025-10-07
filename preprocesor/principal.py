@@ -25,7 +25,7 @@ class Config:
     EMBEDDINGS_PATH = Path("./data/embeddings")     # Carpeta con embeddings individuales
     MODEL_NAME = 'multi-qa-MiniLM-L6-cos-v1'        # Modelo de embeddings
     SIMILARITY_THRESHOLD = 0.7
-    MIN_SIMILARITY_FILTER = 0.35
+    MIN_SIMILARITY_FILTER = 0.9
     TOP_N_FILTER = 5
     FAISS_TOP_K = 5
 
