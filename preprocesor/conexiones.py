@@ -10,6 +10,7 @@ from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 from pyngrok import ngrok
 import requests
+from txt_a_qa import procesar_todos_los_pdfs
 from waitress import serve
 from principal import responder_a_consulta   # función IA para responder consultas
 
@@ -273,6 +274,46 @@ async def responder_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=f"❌ Error: {e}"
         )
 
+
+import time
+from pathlib import Path
+import threading
+
+# Set global de PDFs ya procesados
+pdf_procesados = set(Path("./data/imputPDF").glob("*.pdf"))
+
+def vigilar_pdfs(carpeta_entrada="./data/imputPDF", carpeta_salida="./data/output"):
+    """
+    Cada minuto revisa si hay PDFs nuevos.
+    Solo llama a procesar_todos_los_pdfs si encuentra PDFs nuevos.
+    """
+    global pdf_procesados
+    entrada_path = Path(carpeta_entrada)
+    entrada_path.mkdir(parents=True, exist_ok=True)
+
+    while True:
+        # Todos los PDFs actuales
+        pdf_actuales = set(entrada_path.glob("*.pdf"))
+
+        # Detectar PDFs nuevos
+        nuevos = [pdf for pdf in pdf_actuales if pdf.name not in {p.name for p in pdf_procesados}]
+
+        if nuevos:
+            print(f"Se detectaron {len(nuevos)} PDF(s) nuevos: {[p.name for p in nuevos]}")
+            # Solo procesar si hay PDFs nuevos
+            procesar_todos_los_pdfs(carpeta_entrada, carpeta_salida)
+            # Actualizar set de procesados
+            pdf_procesados = pdf_actuales
+        else:
+            print("No hay PDFs nuevos. No se procesa nada.")
+
+        time.sleep(60)
+
+
+
+
+
+
 # ===================== REGISTRO DE HANDLERS =====================
 tg_app.add_handler(CommandHandler("start", start))
 tg_app.add_handler(CommandHandler("help", help_command))
@@ -305,11 +346,18 @@ def run_bot():
 if __name__ == "__main__":
     print("🌍 URL ngrok generada:", public_url)
 
+    # Inicia el bot en un hilo
     threading.Thread(target=run_bot, daemon=True).start()
 
+    # Inicia la vigilancia de PDFs en otro hilo
+    threading.Thread(target=vigilar_pdfs, daemon=True).start()
+
+    # Configurar webhook
     requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=true")
     r = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}")
     print("Webhook set:", r.json())
 
+    # Ejecutar servidor Flask principal con Waitress
     print("🚀 Servidor Flask corriendo con waitress...")
     serve(app, host="0.0.0.0", port=5000)
+
